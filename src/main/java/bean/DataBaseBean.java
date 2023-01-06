@@ -36,13 +36,12 @@ public class DataBaseBean implements Serializable {
         return results;
     }
 
-    public boolean addResultToDataBase(Result result) {
-        try {
-            initTransaction(manager -> manager.persist(result));
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
+    public void addResultToDataBase(Result result) {
+        initTransaction(manager -> manager.persist(result));
+    }
+
+    public void clearDataBase() {
+        initTransaction(manager -> manager.createQuery("DELETE FROM Result "));
     }
 
     private void initTransaction(Consumer<EntityManager> transaction) {

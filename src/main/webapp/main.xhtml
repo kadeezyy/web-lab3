@@ -117,6 +117,12 @@
                                 render="y_msg r_msg main_table plot_script"/>
                     </h:commandButton>
                 </div>
+                <div class="clear-button">
+                    <h:commandButton id="clear-button" value="Очистить" action="${resultsBean.clearResult()}">
+                        <f:ajax execute="@form"
+                                render="y_msg r_msg main_table plot_script"/>
+                    </h:commandButton>
+                </div>
                 <p:remoteCommand name="addResultFromPlot"
                                  update="y_msg r_msg main_table plot_script"
                                  action="#{resultsBean.addResultFromPlot}"/>

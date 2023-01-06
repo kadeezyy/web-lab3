@@ -57,7 +57,6 @@ public class ResultsBean implements Serializable {
                 current.setSuccessful(Checker.isOnPlot(current.getX(), current.getY(), current.getR()));
                 current.setTime(System.currentTimeMillis());
                 newResult();
-                results.forEach(System.out::println);
             } else throw new ValidationException();
         } catch (Exception ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
@@ -69,9 +68,14 @@ public class ResultsBean implements Serializable {
     }
 
     public void newResult() {
-        if (dataBaseBean.addResultToDataBase(current)) {
-            results.add(current);
-        }
+        dataBaseBean.addResultToDataBase(current);
+        results.add(current);
+        current = current.clone();
+    }
+
+    public void clearResult() {
+        dataBaseBean.clearDataBase();
+        results.clear();
     }
 
 
