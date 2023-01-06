@@ -23,8 +23,8 @@ import java.util.function.Consumer;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DataBaseBean implements Serializable {
-    static final EntityManagerFactory entityManagerFactory =
-            Persistence.createEntityManagerFactory("database");
+    final EntityManagerFactory entityManagerFactory =
+            Persistence.createEntityManagerFactory("connection");
 
     List<Result> results = new CopyOnWriteArrayList<>();
 //    public List<Result> getResults() {
@@ -34,13 +34,13 @@ public class DataBaseBean implements Serializable {
 //        ));
 //        return results;
 //    }
-//    @PostConstruct
-//    public void postInit() {
-//        initTransaction(manager -> results.addAll(manager
-//                .createQuery("SELECT result FROM Result result", Result.class)
-//                .getResultList()
-//        ));
-//    }
+    @PostConstruct
+    public void postInit() {
+        initTransaction(manager -> results.addAll(manager
+                .createQuery("SELECT result FROM Result result", Result.class)
+                .getResultList()
+        ));
+    }
 
 
     public boolean addResultToDataBase(Result result) {
