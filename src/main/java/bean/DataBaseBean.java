@@ -27,21 +27,14 @@ public class DataBaseBean implements Serializable {
             Persistence.createEntityManagerFactory("connection");
 
     List<Result> results = new CopyOnWriteArrayList<>();
-//    public List<Result> getResults() {
-//        initTransaction(manager -> results.addAll(manager
-//                .createQuery("SELECT result FROM Result result", Result.class)
-//                .getResultList()
-//        ));
-//        return results;
-//    }
-    @PostConstruct
-    public void postInit() {
+
+    public List<Result> getResults() {
         initTransaction(manager -> results.addAll(manager
                 .createQuery("SELECT result FROM Result result", Result.class)
                 .getResultList()
         ));
+        return results;
     }
-
 
     public boolean addResultToDataBase(Result result) {
         try {
@@ -62,8 +55,8 @@ public class DataBaseBean implements Serializable {
             if (manager.getTransaction().isActive()) {
                 manager.getTransaction().rollback();
             }
-            System.out.println("An exception occurred during transaction.");
-            ex.printStackTrace();
+            System.out.println("----------An exception occurred during transaction---------");
+//            ex.printStackTrace();
         } finally {
             manager.close();
         }

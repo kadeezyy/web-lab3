@@ -2,6 +2,7 @@ package bean;
 
 import com.google.gson.GsonBuilder;
 import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Named
-@SessionScoped
+@ApplicationScoped
 @Getter
 @Setter
 @AllArgsConstructor
@@ -55,7 +56,8 @@ public class ResultsBean implements Serializable {
                 current.setY(y);
                 current.setSuccessful(Checker.isOnPlot(current.getX(), current.getY(), current.getR()));
                 current.setTime(System.currentTimeMillis());
-                newResult(current);
+                newResult();
+                results.forEach(System.out::println);
             } else throw new ValidationException();
         } catch (Exception ex) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
@@ -66,9 +68,9 @@ public class ResultsBean implements Serializable {
         }
     }
 
-    public void newResult(Result result) {
-        if (dataBaseBean.addResultToDataBase(result)) {
-            results.add(result);
+    public void newResult() {
+        if (dataBaseBean.addResultToDataBase(current)) {
+            results.add(current);
         }
     }
 
