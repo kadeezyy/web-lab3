@@ -1,16 +1,16 @@
 package bean;
 
 import entity.Result;
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import util.Checker;
 
 import java.io.Serializable;
 import java.util.List;
@@ -20,32 +20,36 @@ import java.util.function.Consumer;
 @SessionScoped
 @Getter
 @Setter
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DataBaseBean implements Serializable {
     static final EntityManagerFactory entityManagerFactory =
             Persistence.createEntityManagerFactory("database");
 
-    final List<Result> results = new CopyOnWriteArrayList<>();
+    List<Result> results = new CopyOnWriteArrayList<>();
+//    public List<Result> getResults() {
+//        initTransaction(manager -> results.addAll(manager
+//                .createQuery("SELECT result FROM Result result", Result.class)
+//                .getResultList()
+//        ));
+//        return results;
+//    }
+//    @PostConstruct
+//    public void postInit() {
+//        initTransaction(manager -> results.addAll(manager
+//                .createQuery("SELECT result FROM Result result", Result.class)
+//                .getResultList()
+//        ));
+//    }
 
-    public DataBaseBean() {
-        initTransaction(manager -> results.addAll(manager
-                .createQuery("SELECT result FROM Result result", Result.class)
-                .getResultList()
-        ));
-    }
 
     public boolean addResultToDataBase(Result result) {
         try {
             initTransaction(manager -> manager.persist(result));
+            return true;
         } catch (Exception ex) {
             return false;
         }
-        return true;
-//        current.setSuccessful(Checker.isOnPlot(current.getX(), current.getY(), current.getR()));
-//        current.setTime(System.currentTimeMillis());
-//        results.add(current);
-//        initTransaction(manager -> manager.persist(current));
-//        current = current.clone();
     }
 
     private void initTransaction(Consumer<EntityManager> transaction) {

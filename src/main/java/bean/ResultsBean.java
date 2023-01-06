@@ -7,7 +7,6 @@ import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.validation.ValidationException;
 import lombok.AccessLevel;
@@ -29,21 +28,19 @@ import java.util.concurrent.CopyOnWriteArrayList;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ResultsBean implements Serializable {
-
-    final EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("connection");
-    final List<Result> results = new CopyOnWriteArrayList<>();
+    List<Result> results = new CopyOnWriteArrayList<>();
     Result current = new Result();
+
     @Inject
     DataBaseBean dataBaseBean;
+
+    public ResultsBean() {
+    }
 
     @PostConstruct
     public void postInit() {
         results.addAll(dataBaseBean.getResults());
     }
-
-    public ResultsBean() {
-    }
-
 
     public void addResultFromPlot() {
         var params = FacesContext.getCurrentInstance()
@@ -57,6 +54,7 @@ public class ResultsBean implements Serializable {
                 current.setX(x);
                 current.setY(y);
                 current.setSuccessful(Checker.isOnPlot(current.getX(), current.getY(), current.getR()));
+                current.setTime(System.currentTimeMillis());
                 newResult(current);
             } else throw new ValidationException();
         } catch (Exception ex) {
@@ -69,8 +67,9 @@ public class ResultsBean implements Serializable {
     }
 
     public void newResult(Result result) {
-        results.add(result);
-        dataBaseBean.addResultToDataBase(result);
+        if (dataBaseBean.addResultToDataBase(result)) {
+            results.add(result);
+        }
     }
 
 

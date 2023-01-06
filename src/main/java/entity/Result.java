@@ -24,7 +24,7 @@ public class Result implements Serializable, Cloneable {
     @SequenceGenerator(name = "sequence_generator", sequenceName = "id_sequence", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence_generator")
     int id;
-    double x, y, r = 0.5;
+    double x, y, r = 1;
     @Transient
     boolean successful;
     long time;
