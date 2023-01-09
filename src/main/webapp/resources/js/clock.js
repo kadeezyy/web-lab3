@@ -1,9 +1,3 @@
-
-window.onload = function(){
-    window.setInterval(function(){
-        let now = new Date();
-        let clock = document.getElementById("clock");
-        clock.innerHTML = now.toLocaleTimeString();
-    },1000);
-    document.getElementById("clock_bar").innerHTML = ""
-};
+setInterval(() => {
+    $('#clock_bar').html(moment().format('HH:mm:ss DD.MM.YYYY'))
+}, 1000);

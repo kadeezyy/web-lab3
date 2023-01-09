@@ -28,27 +28,6 @@ body > div {
   color: white;
 }
 
-.footer {
-  grid-area: footer;
-  background-color: #F3B05A;
-  border: none;
-  padding: 0;
-  color: white;
-  border-radius: 100px 100px 0 0;
-}
-
-.footer img {
-  border-radius: 50%;
-  width: 55px;
-  height: 55px;
-  margin: 15px 7px;
-  box-shadow: 0 0 5px 3px rgba(0, 0, 0, 0.2);
-}
-
-.footer img:hover {
-   box-shadow: 0 0 10px 4px rgba(255, 255, 255, 0.75);
- }
-
 .switch_page_button * {
   font-size: 15px;
   margin: 25px 5px 5px;
