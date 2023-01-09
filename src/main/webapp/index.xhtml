@@ -7,23 +7,16 @@
 >
 <ui:composition template="resources/templates/template.xhtml">
     <ui:define name="head">
-<!--        <h:outputStylesheet library="css" name="clock_styles.css"/>-->
+        <!--        <h:outputStylesheet library="css" name="clock_styles.css"/>-->
         <h:outputStylesheet library="css" name="clockStyle.css"/>
         <h:outputScript library="js" name="libs/moment.min.js"/>
         <h:outputScript library="js" name="clock.js"/>
     </ui:define>
     <ui:define name="content">
-        <div class="clock">
-            <ul>
-                <li id="hours">00</li>
-                <li class="separator">:</li>
-                <li id="minutes">00</li>
-                <li class="separator">:</li>
-                <li id="seconds">00</li>
-            </ul>
+        <div id="clock">
         </div>
-        <div class="clock_bar">
-            Загрузка часов  . . .
+        <div id="clock_bar">
+            Загрузка часов . . .
         </div>
         <div class="switch_page_button">
             <h:button value="Перейти на главную страницу" outcome="main"/>

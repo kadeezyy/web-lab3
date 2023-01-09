@@ -1,17 +1,9 @@
-// setInterval(() => {
-//     $('.clock_bar').html(moment().format('D.MM.YYYY HH:mm:ss'))
-// }, 1000);
 
-setInterval( ()  => {
-    // Seconds
-    let seconds = new Date().getSeconds();
-    document.getElementById("seconds").html((seconds < 10 ? '0' : '') + seconds);
-
-    // Minutes
-    let minutes = new Date().getMinutes();
-    document.getElementById("minutes").html((minutes < 10 ? '0' : '') + minutes);
-
-    // Hours
-    let hours = new Date().getHours();
-    document.getElementById("hours").html((hours < 10 ? '0' : '') + hours);
-}, 1000);
+window.onload = function(){
+    window.setInterval(function(){
+        let now = new Date();
+        let clock = document.getElementById("clock");
+        clock.innerHTML = now.toLocaleTimeString();
+    },1000);
+    document.getElementById("clock_bar").innerHTML = ""
+};
