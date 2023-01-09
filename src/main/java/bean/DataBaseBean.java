@@ -3,6 +3,7 @@ package bean;
 import entity.Result;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.SessionScoped;
+import jakarta.faces.context.FacesContext;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -27,10 +28,12 @@ public class DataBaseBean implements Serializable {
             Persistence.createEntityManagerFactory("connection");
 
     List<Result> results = new CopyOnWriteArrayList<>();
-
+    String sessionID;
     public List<Result> getResults() {
+        sessionID = FacesContext.getCurrentInstance().getExternalContext().getSessionId(false);
         initTransaction(manager -> results.addAll(manager
-                .createQuery("SELECT result FROM Result result", Result.class)
+                .createQuery("SELECT result FROM Result result WHERE result.sessionId = ?1", Result.class)
+                        .setParameter(1, sessionID)
                 .getResultList()
         ));
         return results;
@@ -41,7 +44,9 @@ public class DataBaseBean implements Serializable {
     }
 
     public void clearDataBase() {
-        initTransaction(manager -> manager.createQuery("DELETE FROM Result "));
+        sessionID = FacesContext.getCurrentInstance().getExternalContext().getSessionId(false);
+        initTransaction(manager -> manager.createQuery("DELETE FROM Result WHERE sessionId=?1")
+                .setParameter(1, sessionID));
     }
 
     private void initTransaction(Consumer<EntityManager> transaction) {

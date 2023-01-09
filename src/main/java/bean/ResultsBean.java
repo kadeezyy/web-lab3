@@ -3,50 +3,46 @@ package bean;
 import com.google.gson.GsonBuilder;
 import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.SessionScoped;
 import jakarta.faces.application.FacesMessage;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import jakarta.persistence.Persistence;
 import jakarta.validation.ValidationException;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import entity.Result;
 import util.Checker;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Named
 @ApplicationScoped
 @Getter
 @Setter
-@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ResultsBean implements Serializable {
     List<Result> results = new CopyOnWriteArrayList<>();
     Result current = new Result();
-
+    Map<String, List<Result>> res = new HashMap<>();
     @Inject
     DataBaseBean dataBaseBean;
-
-    public ResultsBean() {
-    }
-
+    List<Result> emptyResultsList = new CopyOnWriteArrayList<>();
+    String sessionId;
     @PostConstruct
     public void postInit() {
-        results.addAll(dataBaseBean.getResults());
+        sessionId = getCurrentSessionId();
+        res.put(sessionId, dataBaseBean.getResults());
     }
 
     public void addResultFromPlot() {
         var params = FacesContext.getCurrentInstance()
                 .getExternalContext().getRequestParameterMap();
-
+        sessionId = getCurrentSessionId();
         try {
             double x = Double.parseDouble(params.get("x")),
                     y = Double.parseDouble(params.get("y"));
@@ -56,6 +52,7 @@ public class ResultsBean implements Serializable {
                 current.setY(y);
                 current.setSuccessful(Checker.isOnPlot(current.getX(), current.getY(), current.getR()));
                 current.setTime(System.currentTimeMillis());
+                current.setSessionId(sessionId);
                 newResult();
             } else throw new ValidationException();
         } catch (Exception ex) {
@@ -68,24 +65,41 @@ public class ResultsBean implements Serializable {
     }
 
     public void newResult() {
+        sessionId = getCurrentSessionId();
         dataBaseBean.addResultToDataBase(current);
-        results.add(current);
+        addToMapIfExists(sessionId, current);
         current = current.clone();
     }
 
     public void clearResult() {
+        sessionId = getCurrentSessionId();
         dataBaseBean.clearDataBase();
-        results.clear();
+        res.replace(sessionId, emptyResultsList);
     }
 
+    private List<Result> getIfEmptyListById(String id) {
+        return res.get(id) != null ? res.get(id) : emptyResultsList;
+    }
 
     public String parseResultsToJson() {
-        return new GsonBuilder().create().toJson(results.stream()
+        sessionId = getCurrentSessionId();
+        return new GsonBuilder().create().toJson(getIfEmptyListById(sessionId).stream()
                 .peek(result -> result.setSuccessful(Checker.isOnPlot(
                         result.getX(),
                         result.getY(),
                         current.getR()
                 )))
                 .toArray());
+    }
+
+    private void addToMapIfExists(String key, Result result) {
+        if (res.containsKey(key)) {
+            res.get(key).add(result);
+        } else {
+            res.put(key, dataBaseBean.getResults());
+        }
+    }
+    private String getCurrentSessionId() {
+        return FacesContext.getCurrentInstance().getExternalContext().getSessionId(false);
     }
 }

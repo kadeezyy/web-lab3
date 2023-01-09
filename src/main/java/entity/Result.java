@@ -28,6 +28,7 @@ public class Result implements Serializable, Cloneable {
     @Transient
     boolean successful;
     long time;
+    String sessionId;
 
     public String getSuccessString() {
         return successful ? "Да" : "Нет";

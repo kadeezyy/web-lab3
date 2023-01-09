@@ -129,7 +129,7 @@
             </h:form>
         </div>
         <div class="result_table">
-            <h:dataTable id="main_table" value="#{resultsBean.results}" var="result">
+            <h:dataTable id="main_table" value="#{resultsBean.res.get(session.id)}" var="result">
                 <h:column>
                     <f:facet name="header">Номер</f:facet>
                     #{result.id}
